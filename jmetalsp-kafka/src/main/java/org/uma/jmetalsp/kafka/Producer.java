@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jmetalsp.kafka;
+package org.uma.jmetalsp.kafka;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -45,9 +45,9 @@ public class Producer extends Thread {
     public void run() 
     {
         int messageNo = 1;
-        while (messageNo < 100) 
+        while (messageNo < 1000000) 
         {
-            String messageStr = "Message_" + messageNo + "Asynchronous";
+            String messageStr = Integer.toString(messageNo);
             long startTime = System.currentTimeMillis();
             if (isAsync) 
             { // Send asynchronously
@@ -59,19 +59,6 @@ public class Producer extends Thread {
 					e.printStackTrace();
 				}
             } 
-            /*else 
-            { //Send synchronously
-                try 
-                {
-                    producer.send(new ProducerRecord<>(topic,messageNo, messageStr)).get();
-                    System.out.println("Sent message: (" + messageNo + ", " + messageStr + ")");
-                    System.out.flush();
-                } 
-                catch (InterruptedException | ExecutionException e) 
-                {
-                    e.printStackTrace();
-                }
-            }*/
             ++messageNo;
         }
         int messageNumber = 100;

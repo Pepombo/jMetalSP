@@ -14,22 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jmetalsp.kafka;
+package org.uma.jmetalsp.kafka;
 
 import kafka.utils.ShutdownableThread;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.uma.jmetalsp.StreamingDataSource;
+import org.uma.jmetalsp.observeddata.SingleObservedData;
+import org.uma.jmetalsp.observer.Observable;
 
 import java.util.Collections;
 import java.util.Properties;
 
-public class Consumer extends ShutdownableThread {
+public class Consumer extends ShutdownableThread implements StreamingDataSource<SingleObservedData<Integer>, Observable<SingleObservedData<Integer>>> {
     private final KafkaConsumer<Integer, String> consumer;
     private final String topic;
+    private Observable<SingleObservedData<Integer>> observable;
+	
 
-    public Consumer(String topic) {
+    public Consumer(String topic, Observable<SingleObservedData<Integer>> observable) {
         super("KafkaConsumerExample", false);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaProperties.KAFKA_SERVER_URL + ":" + KafkaProperties.KAFKA_SERVER_PORT);
@@ -42,16 +47,19 @@ public class Consumer extends ShutdownableThread {
 
         consumer = new KafkaConsumer<>(props);
         this.topic = topic;
+        this.observable = observable;
     }
 
     @Override
-    public void doWork() {
+    public void  doWork() {
         consumer.subscribe(Collections.singletonList(this.topic));
         ConsumerRecords<Integer, String> records = consumer.poll(1000);
         for (ConsumerRecord<Integer, String> record : records) {
             System.out.println("Received message: (" + record.key() + ", " + record.value() + ") at offset " + record.offset() + 
             		" in the "+ record.topic());
-            
+            this.observable.setChanged(); ;
+			this.observable.notifyObservers(new SingleObservedData<Integer>(Integer.parseInt(record.value())));
+           
         }
     }
 
@@ -64,4 +72,5 @@ public class Consumer extends ShutdownableThread {
     public boolean isInterruptible() {
         return false;
     }
+
 }

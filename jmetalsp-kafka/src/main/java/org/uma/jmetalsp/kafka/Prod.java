@@ -1,4 +1,4 @@
-package org.jmetalsp.kafka;
+package org.uma.jmetalsp.kafka;
 
 public class Prod {
     public static void main(String[] args) 

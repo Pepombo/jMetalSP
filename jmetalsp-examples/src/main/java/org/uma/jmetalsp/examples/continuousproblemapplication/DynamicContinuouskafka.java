@@ -50,7 +50,7 @@ public class DynamicContinuouskafka {
     application = new JMetalSPApplication<>();
 
     // Set the streaming data source
-    Observable<SingleObservedData<Integer>> fdaObservable = new DefaultObservable<>("timeData") ;
+    Observable<SingleObservedData<Integer>> fdaObservable = new DefaultObservable<>("kafkaData") ;
     StreamingDataSource<SingleObservedData<Integer>, Observable<SingleObservedData<Integer>>> streamingDataSource = new SimpleStreamingKafkaDataSource(fdaObservable, 2000) ;
 
     // Problem configuration

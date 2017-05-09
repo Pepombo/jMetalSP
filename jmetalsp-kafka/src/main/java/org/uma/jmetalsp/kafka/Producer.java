@@ -53,7 +53,7 @@ public class Producer extends Thread {
             { // Send asynchronously
                 producer.send(new ProducerRecord<>(topic,messageNo,messageStr), new DemoCallBack(startTime, messageNo, messageStr));
                 try {
-					Thread.sleep(1000);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
